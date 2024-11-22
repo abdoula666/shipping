@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGBSHOP1 - Calculateur de Frais d'Expédition</title>
+    <meta name="description" content="Calculateur de frais d'expédition maritime et aérien avec support multi-devises">
+    <link rel="icon" type="image/png" href="https://www.google.com/s2/favicons?domain=cgbshop1.com">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        :root {
+            --primary-color: #ae2740;
+            --primary-light: #ae274020;
+            --text-color: #333;
+            --background-color: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .calculator {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(174, 39, 64, 0.1);
+        }
+
+        .shipping-row {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .shipping-row:hover {
+            box-shadow: 0 2px 15px rgba(174, 39, 64, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .input-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        label {
+            min-width: 150px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            width: 140px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            background-color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        input:hover, select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .result {
+            margin-top: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            padding: 15px;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            text-align: right;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .dimensions-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        .dimension-result {
+            margin-top: 15px;
+            padding: 20px;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .dimension-result div {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dimension-result div span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        [id$="CurrencyLabel"], [id$="CurrencySymbol"] {
+            font-weight: 500;
+            color: var(--primary-color);
+            min-width: 50px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        [id$="Cost"] {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .dimensions-toggle {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .dimensions-toggle label {
+            min-width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .dimension-inputs {
+            transition: all 0.3s ease;
+        }
+        .dimension-inputs.hidden {
+            display: none;
+        }
+        .dimension-inputs.visible {
+            display: block;
+        }
+
+        .shipping-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .shipping-row {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .dimensions-toggle {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: nowrap;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .dimensions-toggle label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .dimensions-toggle label:hover {
+            background-color: #e9e9e9;
+        }
+
+        .dimension-result {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .dimension-result div {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .dimension-result span {
+            font-weight: bold;
+            color: #ae2740;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .calculator {
+                padding: 15px;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .dimensions-group {
+                grid-template-columns: 1fr;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            label {
+                margin-bottom: 5px;
+            }
+
+            input, select {
+                width: 100%;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .result {
+                font-size: 1.1rem;
+                text-align: center;
+            }
+
+            .dimensions-toggle {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .dimensions-toggle label {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dimension-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .dimensions-toggle {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .input-group input[type="number"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>CGBSHOP1 - Calculateur de Frais d'Expédition</h2>
+
+        <!-- Currency Selection -->
+        <div class="input-group">
+            <label>Devise:</label>
+            <select id="currencySelect" class="currency-selector">
+                <option value="CFA">CFA (Par défaut)</option>
+                <option value="USD">USD (Dollar US)</option>
+                <option value="EUR">EUR (Euro)</option>
+                <option value="CNY">CNY (Yuan)</option>
+                <option value="GBP">GBP (Livre Sterling)</option>
+                <option value="JPY">JPY (Yen)</option>
+                <option value="CAD">CAD (Dollar Canadien)</option>
+                <option value="AUD">AUD (Dollar Australien)</option>
+                <option value="CHF">CHF (Franc Suisse)</option>
+                <option value="NGN">NGN (Naira)</option>
+                <option value="MAD">MAD (Dirham Marocain)</option>
+                <option value="ZAR">ZAR (Rand Sud-africain)</option>
+                <option value="XOF">XOF (Franc CFA BCEAO)</option>
+                <option value="XAF">XAF (Franc CFA BEAC)</option>
+                <option value="EGP">EGP (Livre Égyptienne)</option>
+                <option value="KES">KES (Shilling Kenyan)</option>
+                <option value="GHS">GHS (Cedi Ghanéen)</option>
+                <option value="DZD">DZD (Dinar Algérien)</option>
+            </select>
+        </div>
+
+        <!-- Sea Shipping Section -->
+        <div class="shipping-row">
+            <h3>Transport Maritime</h3>
+            <div class="dimensions-toggle">
+                <label>
+                    <input type="radio" name="seaDimensionUnit" value="meters" checked> Dimensions en Mètres (m)
+                </label>
+                <label>
+                    <input type="radio" name="seaDimensionUnit" value="centimeters"> Dimensions en Centimètres (cm)
+                </label>
+                <label>
+                    <input type="radio" name="seaDimensionUnit" value="millimeters"> Dimensions en Millimètres (mm)
+                </label>
+            </div>
+            <div class="input-group">
+                <label>Prix par CBM:</label>
+                <input type="number" id="seaPricePerCBM" value="0" step="0.01">
+                <span id="seaCurrencyLabel">CFA</span>
+            </div>
+            
+            <div class="dimensions-group">
+                <!-- Meters Column -->
+                <div id="seaMeterInputs" class="dimension-inputs visible">
+                    <h4>Dimensions en Mètres</h4>
+                    <div class="dimension-inputs">
+                        <label>Longueur (m):</label>
+                        <input type="number" id="seaLengthM" placeholder="Longueur" step="0.01" min="0">
+                        <label>Largeur (m):</label>
+                        <input type="number" id="seaWidthM" placeholder="Largeur" step="0.01" min="0">
+                        <label>Hauteur (m):</label>
+                        <input type="number" id="seaHeightM" placeholder="Hauteur" step="0.01" min="0">
+                    </div>
+                </div>
+
+                <!-- Centimeters Column -->
+                <div id="seaCentimeterInputs" class="dimension-inputs hidden">
+                    <h4>Dimensions en Centimètres</h4>
+                    <div class="dimension-inputs">
+                        <label>Longueur (cm):</label>
+                        <input type="number" id="seaLengthCm" placeholder="Longueur" step="0.1" min="0">
+                        <label>Largeur (cm):</label>
+                        <input type="number" id="seaWidthCm" placeholder="Largeur" step="0.1" min="0">
+                        <label>Hauteur (cm):</label>
+                        <input type="number" id="seaHeightCm" placeholder="Hauteur" step="0.1" min="0">
+                    </div>
+                </div>
+
+                <!-- Millimeter inputs -->
+                <div class="dimension-inputs" id="seaMillimeterInputs" style="display: none;">
+                    <div class="input-group">
+                        <label>Longueur (mm):</label>
+                        <input type="number" id="seaLengthMm" step="1" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Largeur (mm):</label>
+                        <input type="number" id="seaWidthMm" step="1" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Hauteur (mm):</label>
+                        <input type="number" id="seaHeightMm" step="1" min="0">
+                    </div>
+                </div>
+
+                <!-- Results Column -->
+                <div class="dimension-column">
+                    <h4>Valeurs Calculées (en mètres)</h4>
+                    <div class="dimension-result">
+                        <div>Longueur: <span id="finalLength">0</span> m</div>
+                        <div>Largeur: <span id="finalWidth">0</span> m</div>
+                        <div>Hauteur: <span id="finalHeight">0</span> m</div>
+                        <div>CBM: <span id="finalCBM">0</span> m³</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result">
+                Coût Total: <span id="seaCurrencySymbol">CFA</span> <span id="seaCost">0</span>
+            </div>
+        </div>
+
+        <!-- Air Shipping Section -->
+        <div class="shipping-row">
+            <h3>Transport Aérien</h3>
+            <div class="input-group">
+                <label>Prix par KG:</label>
+                <input type="number" id="airPricePerKG" value="0" step="0.01">
+                <span id="airCurrencyLabel">CFA</span>
+            </div>
+            <div class="input-group">
+                <label>Poids (KG):</label>
+                <input type="number" id="airWeight" value="0" step="0.01">
+            </div>
+            <div class="result" id="airResult">Coût total: <span id="airCost">0</span> <span id="airCurrencySymbol">CFA</span></div>
+        </div>
+    </div>
+
+    <script>
+        // Fixed rates (in CFA)
+        const FIXED_RATES = {
+            sea: 0, // CFA per CBM
+            air: 0   // CFA per KG
+        };
+
+        // Currency conversion rates (relative to CFA)
+        const currencyRates = {
+            CFA: 1,
+            USD: 0.00166,    // 1 CFA = 0.00166 USD
+            EUR: 0.00152,    // 1 CFA = 0.00152 EUR
+            CNY: 0.012,      // 1 CFA = 0.012 CNY
+            GBP: 0.00131,    // 1 CFA = 0.00131 GBP
+            JPY: 0.182,      // 1 CFA = 0.182 JPY
+            CAD: 0.00224,    // 1 CFA = 0.00224 CAD
+            AUD: 0.00251,    // 1 CFA = 0.00251 AUD
+            CHF: 0.00147,    // 1 CFA = 0.00147 CHF
+            NGN: 0.76,       // 1 CFA = 0.76 NGN
+            MAD: 0.017,      // 1 CFA = 0.017 MAD
+            ZAR: 0.031,      // 1 CFA = 0.031 ZAR
+            XOF: 1,          // 1 CFA = 1 XOF (same currency)
+            XAF: 1,          // 1 CFA = 1 XAF (same currency)
+            EGP: 0.051,      // 1 CFA = 0.051 EGP
+            KES: 0.24,       // 1 CFA = 0.24 KES
+            GHS: 0.019,      // 1 CFA = 0.019 GHS
+            DZD: 0.22        // 1 CFA = 0.22 DZD
+        };
+
+        // Function to convert currency
+        function convertCurrency(amount, fromCurrency, toCurrency) {
+            const inCFA = amount / currencyRates[fromCurrency];
+            return inCFA * currencyRates[toCurrency];
+        }
+
+        // Function to convert cm to m
+        function cmToM(cm) {
+            return cm / 100;
+        }
+
+        // Function to clear other dimension inputs
+        function clearOtherInputs(type, dimension) {
+            if (type === 'm') {
+                document.getElementById(`sea${dimension}Cm`).value = '';
+            } else {
+                document.getElementById(`sea${dimension}M`).value = '';
+            }
+        }
+
+        // Function to update final dimensions and calculate CBM
+        function updateDimensions() {
+            let length = 0, width = 0, height = 0;
+
+            // Get values from meter inputs
+            const lengthM = parseFloat(document.getElementById('seaLengthM').value) || 0;
+            const widthM = parseFloat(document.getElementById('seaWidthM').value) || 0;
+            const heightM = parseFloat(document.getElementById('seaHeightM').value) || 0;
+
+            // Get values from centimeter inputs
+            const lengthCm = parseFloat(document.getElementById('seaLengthCm').value) || 0;
+            const widthCm = parseFloat(document.getElementById('seaWidthCm').value) || 0;
+            const heightCm = parseFloat(document.getElementById('seaHeightCm').value) || 0;
+
+            // Convert all to meters
+            length = lengthM || cmToM(lengthCm);
+            width = widthM || cmToM(widthCm);
+            height = heightM || cmToM(heightCm);
+
+            // Update display
+            document.getElementById('finalLength').textContent = length.toFixed(2);
+            document.getElementById('finalWidth').textContent = width.toFixed(2);
+            document.getElementById('finalHeight').textContent = height.toFixed(2);
+
+            // Calculate sum and CBM
+            const sum = length + width + height;
+            const cbm = sum / 3;
+            
+            document.getElementById('finalCBM').textContent = cbm.toFixed(2);
+
+            return cbm;
+        }
+
+        // Function to update all currency labels
+        function updateCurrencyLabels(currency) {
+            const currencyLabels = document.querySelectorAll('[id$="CurrencyLabel"]');
+            const currencySymbols = document.querySelectorAll('[id$="CurrencySymbol"]');
+            
+            currencyLabels.forEach(label => label.textContent = currency);
+            currencySymbols.forEach(symbol => symbol.textContent = currency);
+        }
+
+        // Function to calculate sea shipping cost
+        function calculateSeaShipping() {
+            const currency = document.getElementById('currencySelect').value;
+            const cbm = updateDimensions();
+            const pricePerCBM = parseFloat(document.getElementById('seaPricePerCBM').value) || 0;
+            const cost = cbm * pricePerCBM;
+            const convertedCost = convertCurrency(cost, 'CFA', currency);
+
+            document.getElementById('seaCost').textContent = convertedCost.toFixed(2);
+        }
+
+        // Function to calculate air shipping cost
+        function calculateAirShipping() {
+            const weight = parseFloat(document.getElementById('airWeight').value) || 0;
+            const pricePerKG = parseFloat(document.getElementById('airPricePerKG').value) || 0;
+            const cost = weight * pricePerKG;
+
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
+            
+            document.getElementById('airCost').textContent = convertedCost.toFixed(2);
+        }
+
+        // Function to toggle sea dimension unit
+        function toggleSeaDimensionInputs(unit) {
+            const meterInputs = document.getElementById('seaMeterInputs');
+            const centimeterInputs = document.getElementById('seaCentimeterInputs');
+            const millimeterInputs = document.getElementById('seaMillimeterInputs');
+            
+            // Hide all inputs first
+            meterInputs.style.display = 'none';
+            centimeterInputs.style.display = 'none';
+            millimeterInputs.style.display = 'none';
+            
+            // Show selected input and convert values
+            if (unit === 'meters') {
+                meterInputs.style.display = 'block';
+                // Convert from cm to m if values exist
+                const lengthCm = document.getElementById('seaLengthCm').value;
+                const widthCm = document.getElementById('seaWidthCm').value;
+                const heightCm = document.getElementById('seaHeightCm').value;
+                
+                if (lengthCm) document.getElementById('seaLengthM').value = (parseFloat(lengthCm) / 100).toFixed(2);
+                if (widthCm) document.getElementById('seaWidthM').value = (parseFloat(widthCm) / 100).toFixed(2);
+                if (heightCm) document.getElementById('seaHeightM').value = (parseFloat(heightCm) / 100).toFixed(2);
+                
+                // Convert from mm to m if values exist
+                const lengthMm = document.getElementById('seaLengthMm').value;
+                const widthMm = document.getElementById('seaWidthMm').value;
+                const heightMm = document.getElementById('seaHeightMm').value;
+                
+                if (lengthMm) document.getElementById('seaLengthM').value = (parseFloat(lengthMm) / 1000).toFixed(3);
+                if (widthMm) document.getElementById('seaWidthM').value = (parseFloat(widthMm) / 1000).toFixed(3);
+                if (heightMm) document.getElementById('seaHeightM').value = (parseFloat(heightMm) / 1000).toFixed(3);
+            } else if (unit === 'centimeters') {
+                centimeterInputs.style.display = 'block';
+                // Convert from m to cm
+                const lengthM = document.getElementById('seaLengthM').value;
+                const widthM = document.getElementById('seaWidthM').value;
+                const heightM = document.getElementById('seaHeightM').value;
+                
+                if (lengthM) document.getElementById('seaLengthCm').value = (parseFloat(lengthM) * 100).toFixed(1);
+                if (widthM) document.getElementById('seaWidthCm').value = (parseFloat(widthM) * 100).toFixed(1);
+                if (heightM) document.getElementById('seaHeightCm').value = (parseFloat(heightM) * 100).toFixed(1);
+                
+                // Convert from mm to cm
+                const lengthMm = document.getElementById('seaLengthMm').value;
+                const widthMm = document.getElementById('seaWidthMm').value;
+                const heightMm = document.getElementById('seaHeightMm').value;
+                
+                if (lengthMm) document.getElementById('seaLengthCm').value = (parseFloat(lengthMm) / 10).toFixed(1);
+                if (widthMm) document.getElementById('seaWidthCm').value = (parseFloat(widthMm) / 10).toFixed(1);
+                if (heightMm) document.getElementById('seaHeightCm').value = (parseFloat(heightMm) / 10).toFixed(1);
+            } else {
+                millimeterInputs.style.display = 'block';
+                // Convert from m to mm
+                const lengthM = document.getElementById('seaLengthM').value;
+                const widthM = document.getElementById('seaWidthM').value;
+                const heightM = document.getElementById('seaHeightM').value;
+                
+                if (lengthM) document.getElementById('seaLengthMm').value = (parseFloat(lengthM) * 1000).toFixed(0);
+                if (widthM) document.getElementById('seaWidthMm').value = (parseFloat(widthM) * 1000).toFixed(0);
+                if (heightM) document.getElementById('seaHeightMm').value = (parseFloat(heightM) * 1000).toFixed(0);
+                
+                // Convert from cm to mm
+                const lengthCm = document.getElementById('seaLengthCm').value;
+                const widthCm = document.getElementById('seaWidthCm').value;
+                const heightCm = document.getElementById('seaHeightCm').value;
+                
+                if (lengthCm) document.getElementById('seaLengthMm').value = (parseFloat(lengthCm) * 10).toFixed(0);
+                if (widthCm) document.getElementById('seaWidthMm').value = (parseFloat(widthCm) * 10).toFixed(0);
+                if (heightCm) document.getElementById('seaHeightMm').value = (parseFloat(heightCm) * 10).toFixed(0);
+            }
+            
+            calculateSeaShipping();
+        }
+
+        function updateCalculatedValues() {
+            const unit = document.querySelector('input[name="seaDimensionUnit"]:checked').value;
+            let length, width, height;
+            
+            // Get values and convert to meters
+            if (unit === 'meters') {
+                length = parseFloat(document.getElementById('seaLengthM').value) || 0;
+                width = parseFloat(document.getElementById('seaWidthM').value) || 0;
+                height = parseFloat(document.getElementById('seaHeightM').value) || 0;
+            } else if (unit === 'centimeters') {
+                length = (parseFloat(document.getElementById('seaLengthCm').value) || 0) / 100;
+                width = (parseFloat(document.getElementById('seaWidthCm').value) || 0) / 100;
+                height = (parseFloat(document.getElementById('seaHeightCm').value) || 0) / 100;
+            } else {
+                length = (parseFloat(document.getElementById('seaLengthMm').value) || 0) / 1000;
+                width = (parseFloat(document.getElementById('seaWidthMm').value) || 0) / 1000;
+                height = (parseFloat(document.getElementById('seaHeightMm').value) || 0) / 1000;
+            }
+
+            // Round to whole numbers for display
+            document.getElementById('finalLength').textContent = Math.round(length);
+            document.getElementById('finalWidth').textContent = Math.round(width);
+            document.getElementById('finalHeight').textContent = Math.round(height);
+            
+            // Calculate and update CBM (using rounded values for consistency)
+            const cbm = (Math.round(length) + Math.round(width) + Math.round(height)) / 3;
+            document.getElementById('finalCBM').textContent = Math.round(cbm);
+        }
+
+        // Function to calculate sea shipping cost
+        function calculateSeaShipping() {
+            updateCalculatedValues();
+            
+            const cbm = parseFloat(document.getElementById('finalCBM').textContent);
+            const pricePerCBM = parseFloat(document.getElementById('seaPricePerCBM').value) || 0;
+            const cost = cbm * pricePerCBM;
+            
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
+            
+            document.getElementById('seaCost').textContent = convertedCost.toFixed(2);
+        }
+
+        // Add event listeners for sea dimension unit toggle
+        document.querySelectorAll('input[name="seaDimensionUnit"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                toggleSeaDimensionInputs(e.target.value);
+                calculateSeaShipping();
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sea shipping dimension inputs
+            ['Length', 'Width', 'Height'].forEach(dim => {
+                ['M', 'Cm', 'Mm'].forEach(unit => {
+                    document.getElementById('sea' + dim + unit).addEventListener('input', calculateSeaShipping);
+                });
+            });
+
+            // Price inputs
+            document.getElementById('seaPricePerCBM').addEventListener('input', calculateSeaShipping);
+            document.getElementById('airPricePerKG').addEventListener('input', calculateAirShipping);
+            document.getElementById('airWeight').addEventListener('input', calculateAirShipping);
+
+            // Currency select
+            document.getElementById('currencySelect').addEventListener('change', function() {
+                calculateSeaShipping();
+                calculateAirShipping();
+                updateCurrencyLabels();
+            });
+
+            // Initial calculations
+            calculateSeaShipping();
+            calculateAirShipping();
+        });
+
+        function updateCurrencyLabels() {
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            document.querySelectorAll('[id$="CurrencyLabel"]').forEach(label => {
+                label.textContent = selectedCurrency;
+            });
+            document.querySelectorAll('[id$="CurrencySymbol"]').forEach(symbol => {
+                symbol.textContent = selectedCurrency;
+            });
+        }
+    </script>
+</body>
+</html>
