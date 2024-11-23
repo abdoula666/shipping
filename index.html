@@ -484,10 +484,12 @@
                 width = new Decimal(document.getElementById('seaWidthM').value || 0);
                 height = new Decimal(document.getElementById('seaHeightM').value || 0);
             } else if (unit === 'centimeters') {
+                // Convert centimeters to meters (divide by 100)
                 length = new Decimal(document.getElementById('seaLengthCm').value || 0).dividedBy(100);
                 width = new Decimal(document.getElementById('seaWidthCm').value || 0).dividedBy(100);
                 height = new Decimal(document.getElementById('seaHeightCm').value || 0).dividedBy(100);
             } else {
+                // Convert millimeters to meters (divide by 1000)
                 length = new Decimal(document.getElementById('seaLengthMm').value || 0).dividedBy(1000);
                 width = new Decimal(document.getElementById('seaWidthMm').value || 0).dividedBy(1000);
                 height = new Decimal(document.getElementById('seaHeightMm').value || 0).dividedBy(1000);
@@ -498,35 +500,12 @@
             document.getElementById('finalWidth').textContent = width.toDecimalPlaces(3).toString();
             document.getElementById('finalHeight').textContent = height.toDecimalPlaces(3).toString();
             
-            // Calculate and update CBM using Decimal
-            const cbm = length.plus(width).plus(height).dividedBy(3);
+            // Calculate CBM as length * width * height
+            const cbm = length.times(width).times(height);
             document.getElementById('finalCBM').textContent = cbm.toDecimalPlaces(3).toString();
             return cbm;
         }
 
-        function calculateSeaShipping() {
-            const cbm = updateCalculatedValues();
-            const pricePerCBM = new Decimal(document.getElementById('seaPricePerCBM').value || 0);
-            const cost = cbm.times(pricePerCBM);
-            
-            const selectedCurrency = document.getElementById('currencySelect').value;
-            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
-            
-            document.getElementById('seaCost').textContent = convertedCost.toDecimalPlaces(3).toString();
-        }
-
-        function calculateAirShipping() {
-            const weight = new Decimal(document.getElementById('airWeight').value || 0);
-            const pricePerKG = new Decimal(document.getElementById('airPricePerKG').value || 0);
-            const cost = weight.times(pricePerKG);
-
-            const selectedCurrency = document.getElementById('currencySelect').value;
-            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
-            
-            document.getElementById('airCost').textContent = convertedCost.toDecimalPlaces(3).toString();
-        }
-
-        // Function to toggle sea dimension unit
         function toggleSeaDimensionInputs(unit) {
             const meterInputs = document.getElementById('seaMeterInputs');
             const centimeterInputs = document.getElementById('seaCentimeterInputs');
@@ -545,18 +524,18 @@
                 const widthCm = document.getElementById('seaWidthCm').value;
                 const heightCm = document.getElementById('seaHeightCm').value;
                 
-                if (lengthCm) document.getElementById('seaLengthM').value = (parseFloat(lengthCm) / 100).toFixed(3);
-                if (widthCm) document.getElementById('seaWidthM').value = (parseFloat(widthCm) / 100).toFixed(3);
-                if (heightCm) document.getElementById('seaHeightM').value = (parseFloat(heightCm) / 100).toFixed(3);
+                if (lengthCm) document.getElementById('seaLengthM').value = (new Decimal(lengthCm).dividedBy(100)).toDecimalPlaces(3).toString();
+                if (widthCm) document.getElementById('seaWidthM').value = (new Decimal(widthCm).dividedBy(100)).toDecimalPlaces(3).toString();
+                if (heightCm) document.getElementById('seaHeightM').value = (new Decimal(heightCm).dividedBy(100)).toDecimalPlaces(3).toString();
                 
                 // Convert from mm to m if values exist
                 const lengthMm = document.getElementById('seaLengthMm').value;
                 const widthMm = document.getElementById('seaWidthMm').value;
                 const heightMm = document.getElementById('seaHeightMm').value;
                 
-                if (lengthMm) document.getElementById('seaLengthM').value = (parseFloat(lengthMm) / 1000).toFixed(3);
-                if (widthMm) document.getElementById('seaWidthM').value = (parseFloat(widthMm) / 1000).toFixed(3);
-                if (heightMm) document.getElementById('seaHeightM').value = (parseFloat(heightMm) / 1000).toFixed(3);
+                if (lengthMm) document.getElementById('seaLengthM').value = (new Decimal(lengthMm).dividedBy(1000)).toDecimalPlaces(3).toString();
+                if (widthMm) document.getElementById('seaWidthM').value = (new Decimal(widthMm).dividedBy(1000)).toDecimalPlaces(3).toString();
+                if (heightMm) document.getElementById('seaHeightM').value = (new Decimal(heightMm).dividedBy(1000)).toDecimalPlaces(3).toString();
             } else if (unit === 'centimeters') {
                 centimeterInputs.style.display = 'block';
                 // Convert from m to cm
@@ -564,18 +543,18 @@
                 const widthM = document.getElementById('seaWidthM').value;
                 const heightM = document.getElementById('seaHeightM').value;
                 
-                if (lengthM) document.getElementById('seaLengthCm').value = (parseFloat(lengthM) * 100).toFixed(1);
-                if (widthM) document.getElementById('seaWidthCm').value = (parseFloat(widthM) * 100).toFixed(1);
-                if (heightM) document.getElementById('seaHeightCm').value = (parseFloat(heightM) * 100).toFixed(1);
+                if (lengthM) document.getElementById('seaLengthCm').value = (new Decimal(lengthM).times(100)).toDecimalPlaces(3).toString();
+                if (widthM) document.getElementById('seaWidthCm').value = (new Decimal(widthM).times(100)).toDecimalPlaces(3).toString();
+                if (heightM) document.getElementById('seaHeightCm').value = (new Decimal(heightM).times(100)).toDecimalPlaces(3).toString();
                 
                 // Convert from mm to cm
                 const lengthMm = document.getElementById('seaLengthMm').value;
                 const widthMm = document.getElementById('seaWidthMm').value;
                 const heightMm = document.getElementById('seaHeightMm').value;
                 
-                if (lengthMm) document.getElementById('seaLengthCm').value = (parseFloat(lengthMm) / 10).toFixed(1);
-                if (widthMm) document.getElementById('seaWidthCm').value = (parseFloat(widthMm) / 10).toFixed(1);
-                if (heightMm) document.getElementById('seaHeightCm').value = (parseFloat(heightMm) / 10).toFixed(1);
+                if (lengthMm) document.getElementById('seaLengthCm').value = (new Decimal(lengthMm).dividedBy(10)).toDecimalPlaces(3).toString();
+                if (widthMm) document.getElementById('seaWidthCm').value = (new Decimal(widthMm).dividedBy(10)).toDecimalPlaces(3).toString();
+                if (heightMm) document.getElementById('seaHeightCm').value = (new Decimal(heightMm).dividedBy(10)).toDecimalPlaces(3).toString();
             } else {
                 millimeterInputs.style.display = 'block';
                 // Convert from m to mm
@@ -583,18 +562,18 @@
                 const widthM = document.getElementById('seaWidthM').value;
                 const heightM = document.getElementById('seaHeightM').value;
                 
-                if (lengthM) document.getElementById('seaLengthMm').value = (parseFloat(lengthM) * 1000).toFixed(0);
-                if (widthM) document.getElementById('seaWidthMm').value = (parseFloat(widthM) * 1000).toFixed(0);
-                if (heightM) document.getElementById('seaHeightMm').value = (parseFloat(heightM) * 1000).toFixed(0);
+                if (lengthM) document.getElementById('seaLengthMm').value = (new Decimal(lengthM).times(1000)).toDecimalPlaces(3).toString();
+                if (widthM) document.getElementById('seaWidthMm').value = (new Decimal(widthM).times(1000)).toDecimalPlaces(3).toString();
+                if (heightM) document.getElementById('seaHeightMm').value = (new Decimal(heightM).times(1000)).toDecimalPlaces(3).toString();
                 
                 // Convert from cm to mm
                 const lengthCm = document.getElementById('seaLengthCm').value;
                 const widthCm = document.getElementById('seaWidthCm').value;
                 const heightCm = document.getElementById('seaHeightCm').value;
                 
-                if (lengthCm) document.getElementById('seaLengthMm').value = (parseFloat(lengthCm) * 10).toFixed(0);
-                if (widthCm) document.getElementById('seaWidthMm').value = (parseFloat(widthCm) * 10).toFixed(0);
-                if (heightCm) document.getElementById('seaHeightMm').value = (parseFloat(heightCm) * 10).toFixed(0);
+                if (lengthCm) document.getElementById('seaLengthMm').value = (new Decimal(lengthCm).times(10)).toDecimalPlaces(3).toString();
+                if (widthCm) document.getElementById('seaWidthMm').value = (new Decimal(widthCm).times(10)).toDecimalPlaces(3).toString();
+                if (heightCm) document.getElementById('seaHeightMm').value = (new Decimal(heightCm).times(10)).toDecimalPlaces(3).toString();
             }
             
             calculateSeaShipping();
@@ -650,6 +629,28 @@
             document.querySelectorAll('[id$="CurrencySymbol"]').forEach(symbol => {
                 symbol.textContent = selectedCurrency;
             });
+        }
+
+        function calculateSeaShipping() {
+            const cbm = updateCalculatedValues();
+            const pricePerCBM = new Decimal(document.getElementById('seaPricePerCBM').value || 0);
+            const cost = cbm.times(pricePerCBM);
+            
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
+            
+            document.getElementById('seaCost').textContent = convertedCost.toDecimalPlaces(3).toString();
+        }
+
+        function calculateAirShipping() {
+            const weight = new Decimal(document.getElementById('airWeight').value || 0);
+            const pricePerKG = new Decimal(document.getElementById('airPricePerKG').value || 0);
+            const cost = weight.times(pricePerKG);
+
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
+            
+            document.getElementById('airCost').textContent = convertedCost.toDecimalPlaces(3).toString();
         }
     </script>
 </body>
