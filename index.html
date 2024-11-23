@@ -353,7 +353,7 @@
             </div>
             <div class="input-group">
                 <label>Prix par CBM:</label>
-                <input type="number" id="seaPricePerCBM" value="0" step="0.01">
+                <input type="number" id="seaPricePerCBM" value="0.000" step="0.001">
                 <span id="seaCurrencyLabel">CFA</span>
             </div>
             
@@ -363,11 +363,11 @@
                     <h4>Dimensions en Mètres</h4>
                     <div class="dimension-inputs">
                         <label>Longueur (m):</label>
-                        <input type="number" id="seaLengthM" placeholder="Longueur" step="0.01" min="0">
+                        <input type="number" id="seaLengthM" placeholder="Longueur" step="0.001" min="0">
                         <label>Largeur (m):</label>
-                        <input type="number" id="seaWidthM" placeholder="Largeur" step="0.01" min="0">
+                        <input type="number" id="seaWidthM" placeholder="Largeur" step="0.001" min="0">
                         <label>Hauteur (m):</label>
-                        <input type="number" id="seaHeightM" placeholder="Hauteur" step="0.01" min="0">
+                        <input type="number" id="seaHeightM" placeholder="Hauteur" step="0.001" min="0">
                     </div>
                 </div>
 
@@ -413,7 +413,7 @@
             </div>
             
             <div class="result">
-                Coût Total: <span id="seaCurrencySymbol">CFA</span> <span id="seaCost">0</span>
+                Coût Total: <span id="seaCurrencySymbol">CFA</span> <span id="seaCost">0.000</span>
             </div>
         </div>
 
@@ -422,14 +422,14 @@
             <h3>Transport Aérien</h3>
             <div class="input-group">
                 <label>Prix par KG:</label>
-                <input type="number" id="airPricePerKG" value="0" step="0.01">
+                <input type="number" id="airPricePerKG" value="0.000" step="0.001">
                 <span id="airCurrencyLabel">CFA</span>
             </div>
             <div class="input-group">
                 <label>Poids (KG):</label>
-                <input type="number" id="airWeight" value="0" step="0.01">
+                <input type="number" id="airWeight" value="0.000" step="0.001">
             </div>
-            <div class="result" id="airResult">Coût total: <span id="airCost">0</span> <span id="airCurrencySymbol">CFA</span></div>
+            <div class="result" id="airResult">Coût total: <span id="airCost">0.000</span> <span id="airCurrencySymbol">CFA</span></div>
         </div>
     </div>
 
@@ -512,7 +512,7 @@
             const selectedCurrency = document.getElementById('currencySelect').value;
             const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
             
-            document.getElementById('seaCost').textContent = convertedCost.toDecimalPlaces(2).toString();
+            document.getElementById('seaCost').textContent = convertedCost.toDecimalPlaces(3).toString();
         }
 
         function calculateAirShipping() {
@@ -523,7 +523,7 @@
             const selectedCurrency = document.getElementById('currencySelect').value;
             const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
             
-            document.getElementById('airCost').textContent = convertedCost.toDecimalPlaces(2).toString();
+            document.getElementById('airCost').textContent = convertedCost.toDecimalPlaces(3).toString();
         }
 
         // Function to toggle sea dimension unit
@@ -545,9 +545,9 @@
                 const widthCm = document.getElementById('seaWidthCm').value;
                 const heightCm = document.getElementById('seaHeightCm').value;
                 
-                if (lengthCm) document.getElementById('seaLengthM').value = (parseFloat(lengthCm) / 100).toFixed(2);
-                if (widthCm) document.getElementById('seaWidthM').value = (parseFloat(widthCm) / 100).toFixed(2);
-                if (heightCm) document.getElementById('seaHeightM').value = (parseFloat(heightCm) / 100).toFixed(2);
+                if (lengthCm) document.getElementById('seaLengthM').value = (parseFloat(lengthCm) / 100).toFixed(3);
+                if (widthCm) document.getElementById('seaWidthM').value = (parseFloat(widthCm) / 100).toFixed(3);
+                if (heightCm) document.getElementById('seaHeightM').value = (parseFloat(heightCm) / 100).toFixed(3);
                 
                 // Convert from mm to m if values exist
                 const lengthMm = document.getElementById('seaLengthMm').value;
