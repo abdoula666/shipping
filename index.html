@@ -353,7 +353,7 @@
             </div>
             <div class="input-group">
                 <label>Prix par CBM:</label>
-                <input type="number" id="seaPricePerCBM" value="0.000" step="0.001">
+                <input type="number" id="seaPricePerCBM" value="0.000" step="0.001" min="0" onchange="this.value = parseFloat(this.value).toFixed(3)">
                 <span id="seaCurrencyLabel">CFA</span>
             </div>
             
@@ -422,12 +422,12 @@
             <h3>Transport Aérien</h3>
             <div class="input-group">
                 <label>Prix par KG:</label>
-                <input type="number" id="airPricePerKG" value="0.000" step="0.001">
+                <input type="number" id="airPricePerKG" value="0.000" step="0.001" min="0" onchange="this.value = parseFloat(this.value).toFixed(3)">
                 <span id="airCurrencyLabel">CFA</span>
             </div>
             <div class="input-group">
                 <label>Poids (KG):</label>
-                <input type="number" id="airWeight" value="0.000" step="0.001">
+                <input type="number" id="airWeight" value="0.000" step="0.001" min="0" onchange="this.value = parseFloat(this.value).toFixed(3)">
             </div>
             <div class="result" id="airResult">Coût total: <span id="airCost">0.000</span> <span id="airCurrencySymbol">CFA</span></div>
         </div>
@@ -634,6 +634,7 @@
         function calculateSeaShipping() {
             const cbm = updateCalculatedValues();
             const pricePerCBM = new Decimal(document.getElementById('seaPricePerCBM').value || 0);
+            document.getElementById('seaPricePerCBM').value = pricePerCBM.toDecimalPlaces(3).toString();
             const cost = cbm.times(pricePerCBM);
             
             const selectedCurrency = document.getElementById('currencySelect').value;
@@ -644,7 +645,9 @@
 
         function calculateAirShipping() {
             const weight = new Decimal(document.getElementById('airWeight').value || 0);
+            document.getElementById('airWeight').value = weight.toDecimalPlaces(3).toString();
             const pricePerKG = new Decimal(document.getElementById('airPricePerKG').value || 0);
+            document.getElementById('airPricePerKG').value = pricePerKG.toDecimalPlaces(3).toString();
             const cost = weight.times(pricePerKG);
 
             const selectedCurrency = document.getElementById('currencySelect').value;
