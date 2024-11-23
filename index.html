@@ -404,10 +404,10 @@
                 <div class="dimension-column">
                     <h4>Valeurs Calculées (en mètres)</h4>
                     <div class="dimension-result">
-                        <div>Longueur: <span id="finalLength">0</span> m</div>
-                        <div>Largeur: <span id="finalWidth">0</span> m</div>
-                        <div>Hauteur: <span id="finalHeight">0</span> m</div>
-                        <div>CBM: <span id="finalCBM">0</span> m³</div>
+                        <div>Longueur: <span id="finalLength">0.000</span> m</div>
+                        <div>Largeur: <span id="finalWidth">0.000</span> m</div>
+                        <div>Hauteur: <span id="finalHeight">0.000</span> m</div>
+                        <div>CBM: <span id="finalCBM">0.000</span> m³</div>
                     </div>
                 </div>
             </div>
@@ -493,14 +493,14 @@
                 height = new Decimal(document.getElementById('seaHeightMm').value || 0).dividedBy(1000);
             }
 
-            // Round to whole numbers for display
-            document.getElementById('finalLength').textContent = length.toDecimalPlaces(2).toString();
-            document.getElementById('finalWidth').textContent = width.toDecimalPlaces(2).toString();
-            document.getElementById('finalHeight').textContent = height.toDecimalPlaces(2).toString();
+            // Display values with 3 decimal places for more precision
+            document.getElementById('finalLength').textContent = length.toDecimalPlaces(3).toString();
+            document.getElementById('finalWidth').textContent = width.toDecimalPlaces(3).toString();
+            document.getElementById('finalHeight').textContent = height.toDecimalPlaces(3).toString();
             
             // Calculate and update CBM using Decimal
             const cbm = length.plus(width).plus(height).dividedBy(3);
-            document.getElementById('finalCBM').textContent = cbm.toDecimalPlaces(2).toString();
+            document.getElementById('finalCBM').textContent = cbm.toDecimalPlaces(3).toString();
             return cbm;
         }
 
