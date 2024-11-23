@@ -9,6 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
     <style>
         :root {
             --primary-color: #ae2740;
@@ -352,7 +353,7 @@
             </div>
             <div class="input-group">
                 <label>Prix par CBM:</label>
-                <input type="number" id="seaPricePerCBM" value="0" step="0.01">
+                <input type="number" id="seaPricePerCBM" value="0.000" step="0.001">
                 <span id="seaCurrencyLabel">CFA</span>
             </div>
             
@@ -362,11 +363,11 @@
                     <h4>Dimensions en Mètres</h4>
                     <div class="dimension-inputs">
                         <label>Longueur (m):</label>
-                        <input type="number" id="seaLengthM" placeholder="Longueur" step="0.01" min="0">
+                        <input type="number" id="seaLengthM" placeholder="Longueur" step="0.001" min="0">
                         <label>Largeur (m):</label>
-                        <input type="number" id="seaWidthM" placeholder="Largeur" step="0.01" min="0">
+                        <input type="number" id="seaWidthM" placeholder="Largeur" step="0.001" min="0">
                         <label>Hauteur (m):</label>
-                        <input type="number" id="seaHeightM" placeholder="Hauteur" step="0.01" min="0">
+                        <input type="number" id="seaHeightM" placeholder="Hauteur" step="0.001" min="0">
                     </div>
                 </div>
 
@@ -403,16 +404,16 @@
                 <div class="dimension-column">
                     <h4>Valeurs Calculées (en mètres)</h4>
                     <div class="dimension-result">
-                        <div>Longueur: <span id="finalLength">0</span> m</div>
-                        <div>Largeur: <span id="finalWidth">0</span> m</div>
-                        <div>Hauteur: <span id="finalHeight">0</span> m</div>
-                        <div>CBM: <span id="finalCBM">0</span> m³</div>
+                        <div>Longueur: <span id="finalLength">0.000</span> m</div>
+                        <div>Largeur: <span id="finalWidth">0.000</span> m</div>
+                        <div>Hauteur: <span id="finalHeight">0.000</span> m</div>
+                        <div>CBM: <span id="finalCBM">0.000</span> m³</div>
                     </div>
                 </div>
             </div>
             
             <div class="result">
-                Coût Total: <span id="seaCurrencySymbol">CFA</span> <span id="seaCost">0</span>
+                Coût Total: <span id="seaCurrencySymbol">CFA</span> <span id="seaCost">0.000</span>
             </div>
         </div>
 
@@ -421,129 +422,108 @@
             <h3>Transport Aérien</h3>
             <div class="input-group">
                 <label>Prix par KG:</label>
-                <input type="number" id="airPricePerKG" value="0" step="0.01">
+                <input type="number" id="airPricePerKG" value="0.000" step="0.001">
                 <span id="airCurrencyLabel">CFA</span>
             </div>
             <div class="input-group">
                 <label>Poids (KG):</label>
-                <input type="number" id="airWeight" value="0" step="0.01">
+                <input type="number" id="airWeight" value="0.000" step="0.001">
             </div>
-            <div class="result" id="airResult">Coût total: <span id="airCost">0</span> <span id="airCurrencySymbol">CFA</span></div>
+            <div class="result" id="airResult">Coût total: <span id="airCost">0.000</span> <span id="airCurrencySymbol">CFA</span></div>
         </div>
     </div>
 
     <script>
         // Fixed rates (in CFA)
         const FIXED_RATES = {
-            sea: 0, // CFA per CBM
-            air: 0   // CFA per KG
+            sea: new Decimal(0), // CFA per CBM
+            air: new Decimal(0)   // CFA per KG
         };
 
         // Currency conversion rates (relative to CFA)
         const currencyRates = {
-            CFA: 1,
-            USD: 0.00166,    // 1 CFA = 0.00166 USD
-            EUR: 0.00152,    // 1 CFA = 0.00152 EUR
-            CNY: 0.012,      // 1 CFA = 0.012 CNY
-            GBP: 0.00131,    // 1 CFA = 0.00131 GBP
-            JPY: 0.182,      // 1 CFA = 0.182 JPY
-            CAD: 0.00224,    // 1 CFA = 0.00224 CAD
-            AUD: 0.00251,    // 1 CFA = 0.00251 AUD
-            CHF: 0.00147,    // 1 CFA = 0.00147 CHF
-            NGN: 0.76,       // 1 CFA = 0.76 NGN
-            MAD: 0.017,      // 1 CFA = 0.017 MAD
-            ZAR: 0.031,      // 1 CFA = 0.031 ZAR
-            XOF: 1,          // 1 CFA = 1 XOF (same currency)
-            XAF: 1,          // 1 CFA = 1 XAF (same currency)
-            EGP: 0.051,      // 1 CFA = 0.051 EGP
-            KES: 0.24,       // 1 CFA = 0.24 KES
-            GHS: 0.019,      // 1 CFA = 0.019 GHS
-            DZD: 0.22        // 1 CFA = 0.22 DZD
+            CFA: new Decimal(1),
+            USD: new Decimal(0.00166),    // 1 CFA = 0.00166 USD
+            EUR: new Decimal(0.00152),    // 1 CFA = 0.00152 EUR
+            CNY: new Decimal(0.012),      // 1 CFA = 0.012 CNY
+            GBP: new Decimal(0.00131),    // 1 CFA = 0.00131 GBP
+            JPY: new Decimal(0.182),      // 1 CFA = 0.182 JPY
+            CAD: new Decimal(0.00224),    // 1 CFA = 0.00224 CAD
+            AUD: new Decimal(0.00251),    // 1 CFA = 0.00251 AUD
+            CHF: new Decimal(0.00147),    // 1 CFA = 0.00147 CHF
+            NGN: new Decimal(0.76),       // 1 CFA = 0.76 NGN
+            MAD: new Decimal(0.017),      // 1 CFA = 0.017 MAD
+            ZAR: new Decimal(0.031),      // 1 CFA = 0.031 ZAR
+            XOF: new Decimal(1),          // 1 CFA = 1 XOF (same currency)
+            XAF: new Decimal(1),          // 1 CFA = 1 XAF (same currency)
+            EGP: new Decimal(0.051),      // 1 CFA = 0.051 EGP
+            KES: new Decimal(0.24),       // 1 CFA = 0.24 KES
+            GHS: new Decimal(0.019),      // 1 CFA = 0.019 GHS
+            DZD: new Decimal(0.22)        // 1 CFA = 0.22 DZD
         };
 
-        // Function to convert currency
+        // Function to convert currency using Decimal
         function convertCurrency(amount, fromCurrency, toCurrency) {
-            const inCFA = amount / currencyRates[fromCurrency];
-            return inCFA * currencyRates[toCurrency];
+            const decAmount = new Decimal(amount);
+            const inCFA = decAmount.dividedBy(currencyRates[fromCurrency]);
+            return inCFA.times(currencyRates[toCurrency]);
         }
 
-        // Function to convert cm to m
+        // Function to convert cm to m using Decimal
         function cmToM(cm) {
-            return cm / 100;
+            return new Decimal(cm).dividedBy(100);
         }
 
-        // Function to clear other dimension inputs
-        function clearOtherInputs(type, dimension) {
-            if (type === 'm') {
-                document.getElementById(`sea${dimension}Cm`).value = '';
-            } else {
-                document.getElementById(`sea${dimension}M`).value = '';
-            }
-        }
-
-        // Function to update final dimensions and calculate CBM
-        function updateDimensions() {
-            let length = 0, width = 0, height = 0;
-
-            // Get values from meter inputs
-            const lengthM = parseFloat(document.getElementById('seaLengthM').value) || 0;
-            const widthM = parseFloat(document.getElementById('seaWidthM').value) || 0;
-            const heightM = parseFloat(document.getElementById('seaHeightM').value) || 0;
-
-            // Get values from centimeter inputs
-            const lengthCm = parseFloat(document.getElementById('seaLengthCm').value) || 0;
-            const widthCm = parseFloat(document.getElementById('seaWidthCm').value) || 0;
-            const heightCm = parseFloat(document.getElementById('seaHeightCm').value) || 0;
-
-            // Convert all to meters
-            length = lengthM || cmToM(lengthCm);
-            width = widthM || cmToM(widthCm);
-            height = heightM || cmToM(heightCm);
-
-            // Update display
-            document.getElementById('finalLength').textContent = length.toFixed(2);
-            document.getElementById('finalWidth').textContent = width.toFixed(2);
-            document.getElementById('finalHeight').textContent = height.toFixed(2);
-
-            // Calculate sum and CBM
-            const sum = length + width + height;
-            const cbm = sum / 3;
+        function updateCalculatedValues() {
+            const unit = document.querySelector('input[name="seaDimensionUnit"]:checked').value;
+            let length, width, height;
             
-            document.getElementById('finalCBM').textContent = cbm.toFixed(2);
+            // Get values and convert to meters using Decimal
+            if (unit === 'meters') {
+                length = new Decimal(document.getElementById('seaLengthM').value || 0);
+                width = new Decimal(document.getElementById('seaWidthM').value || 0);
+                height = new Decimal(document.getElementById('seaHeightM').value || 0);
+            } else if (unit === 'centimeters') {
+                length = new Decimal(document.getElementById('seaLengthCm').value || 0).dividedBy(100);
+                width = new Decimal(document.getElementById('seaWidthCm').value || 0).dividedBy(100);
+                height = new Decimal(document.getElementById('seaHeightCm').value || 0).dividedBy(100);
+            } else {
+                length = new Decimal(document.getElementById('seaLengthMm').value || 0).dividedBy(1000);
+                width = new Decimal(document.getElementById('seaWidthMm').value || 0).dividedBy(1000);
+                height = new Decimal(document.getElementById('seaHeightMm').value || 0).dividedBy(1000);
+            }
 
+            // Display values with 3 decimal places for more precision
+            document.getElementById('finalLength').textContent = length.toDecimalPlaces(3).toString();
+            document.getElementById('finalWidth').textContent = width.toDecimalPlaces(3).toString();
+            document.getElementById('finalHeight').textContent = height.toDecimalPlaces(3).toString();
+            
+            // Calculate and update CBM using Decimal
+            const cbm = length.plus(width).plus(height).dividedBy(3);
+            document.getElementById('finalCBM').textContent = cbm.toDecimalPlaces(3).toString();
             return cbm;
         }
 
-        // Function to update all currency labels
-        function updateCurrencyLabels(currency) {
-            const currencyLabels = document.querySelectorAll('[id$="CurrencyLabel"]');
-            const currencySymbols = document.querySelectorAll('[id$="CurrencySymbol"]');
-            
-            currencyLabels.forEach(label => label.textContent = currency);
-            currencySymbols.forEach(symbol => symbol.textContent = currency);
-        }
-
-        // Function to calculate sea shipping cost
         function calculateSeaShipping() {
-            const currency = document.getElementById('currencySelect').value;
-            const cbm = updateDimensions();
-            const pricePerCBM = parseFloat(document.getElementById('seaPricePerCBM').value) || 0;
-            const cost = cbm * pricePerCBM;
-            const convertedCost = convertCurrency(cost, 'CFA', currency);
-
-            document.getElementById('seaCost').textContent = convertedCost.toFixed(2);
+            const cbm = updateCalculatedValues();
+            const pricePerCBM = new Decimal(document.getElementById('seaPricePerCBM').value || 0);
+            const cost = cbm.times(pricePerCBM);
+            
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
+            
+            document.getElementById('seaCost').textContent = convertedCost.toDecimalPlaces(3).toString();
         }
 
-        // Function to calculate air shipping cost
         function calculateAirShipping() {
-            const weight = parseFloat(document.getElementById('airWeight').value) || 0;
-            const pricePerKG = parseFloat(document.getElementById('airPricePerKG').value) || 0;
-            const cost = weight * pricePerKG;
+            const weight = new Decimal(document.getElementById('airWeight').value || 0);
+            const pricePerKG = new Decimal(document.getElementById('airPricePerKG').value || 0);
+            const cost = weight.times(pricePerKG);
 
             const selectedCurrency = document.getElementById('currencySelect').value;
             const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
             
-            document.getElementById('airCost').textContent = convertedCost.toFixed(2);
+            document.getElementById('airCost').textContent = convertedCost.toDecimalPlaces(3).toString();
         }
 
         // Function to toggle sea dimension unit
@@ -565,9 +545,9 @@
                 const widthCm = document.getElementById('seaWidthCm').value;
                 const heightCm = document.getElementById('seaHeightCm').value;
                 
-                if (lengthCm) document.getElementById('seaLengthM').value = (parseFloat(lengthCm) / 100).toFixed(2);
-                if (widthCm) document.getElementById('seaWidthM').value = (parseFloat(widthCm) / 100).toFixed(2);
-                if (heightCm) document.getElementById('seaHeightM').value = (parseFloat(heightCm) / 100).toFixed(2);
+                if (lengthCm) document.getElementById('seaLengthM').value = (parseFloat(lengthCm) / 100).toFixed(3);
+                if (widthCm) document.getElementById('seaWidthM').value = (parseFloat(widthCm) / 100).toFixed(3);
+                if (heightCm) document.getElementById('seaHeightM').value = (parseFloat(heightCm) / 100).toFixed(3);
                 
                 // Convert from mm to m if values exist
                 const lengthMm = document.getElementById('seaLengthMm').value;
@@ -620,47 +600,13 @@
             calculateSeaShipping();
         }
 
-        function updateCalculatedValues() {
-            const unit = document.querySelector('input[name="seaDimensionUnit"]:checked').value;
-            let length, width, height;
+        // Function to update all currency labels
+        function updateCurrencyLabels(currency) {
+            const currencyLabels = document.querySelectorAll('[id$="CurrencyLabel"]');
+            const currencySymbols = document.querySelectorAll('[id$="CurrencySymbol"]');
             
-            // Get values and convert to meters
-            if (unit === 'meters') {
-                length = parseFloat(document.getElementById('seaLengthM').value) || 0;
-                width = parseFloat(document.getElementById('seaWidthM').value) || 0;
-                height = parseFloat(document.getElementById('seaHeightM').value) || 0;
-            } else if (unit === 'centimeters') {
-                length = (parseFloat(document.getElementById('seaLengthCm').value) || 0) / 100;
-                width = (parseFloat(document.getElementById('seaWidthCm').value) || 0) / 100;
-                height = (parseFloat(document.getElementById('seaHeightCm').value) || 0) / 100;
-            } else {
-                length = (parseFloat(document.getElementById('seaLengthMm').value) || 0) / 1000;
-                width = (parseFloat(document.getElementById('seaWidthMm').value) || 0) / 1000;
-                height = (parseFloat(document.getElementById('seaHeightMm').value) || 0) / 1000;
-            }
-
-            // Round to whole numbers for display
-            document.getElementById('finalLength').textContent = Math.round(length);
-            document.getElementById('finalWidth').textContent = Math.round(width);
-            document.getElementById('finalHeight').textContent = Math.round(height);
-            
-            // Calculate and update CBM (using rounded values for consistency)
-            const cbm = (Math.round(length) + Math.round(width) + Math.round(height)) / 3;
-            document.getElementById('finalCBM').textContent = Math.round(cbm);
-        }
-
-        // Function to calculate sea shipping cost
-        function calculateSeaShipping() {
-            updateCalculatedValues();
-            
-            const cbm = parseFloat(document.getElementById('finalCBM').textContent);
-            const pricePerCBM = parseFloat(document.getElementById('seaPricePerCBM').value) || 0;
-            const cost = cbm * pricePerCBM;
-            
-            const selectedCurrency = document.getElementById('currencySelect').value;
-            const convertedCost = convertCurrency(cost, 'CFA', selectedCurrency);
-            
-            document.getElementById('seaCost').textContent = convertedCost.toFixed(2);
+            currencyLabels.forEach(label => label.textContent = currency);
+            currencySymbols.forEach(symbol => symbol.textContent = currency);
         }
 
         // Add event listeners for sea dimension unit toggle
